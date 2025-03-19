@@ -1,0 +1,57 @@
+1️⃣ Create a script file to handle the setup:
+
+    sudo nano /usr/local/bin/setup_nvram.sh
+
+2️⃣ Paste this into the script file:
+
+    #!/bin/bash
+
+    NVRAM_DIR="/home/master/Desktop/My Works/PROJECT/CODES/NVRAM"
+    NVRAM_FILE="$NVRAM_DIR/nvram.img"
+
+    mkdir -p "$NVRAM_DIR"
+    touch "$NVRAM_FILE"
+    chmod 600 "$NVRAM_FILE"
+    truncate -s 2G "$NVRAM_FILE"
+
+3️⃣ Make the script executable:
+
+    sudo chmod +x /usr/local/bin/setup_nvram.sh
+
+    sudo nano /etc/systemd/system/nvram-setup.service
+
+Contents of File: 
+
+    [Unit]
+    Description=Setup Persistent NVRAM Simulation
+    Before=multi-user.target
+    Wants=network.target
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/local/bin/setup_nvram.sh
+    RemainAfterExit=true
+
+    [Install]
+    WantedBy=multi-user.target
+
+Run Commands: 
+
+    sudo systemctl daemon-reload
+    sudo systemctl restart nvram-setup.service
+    sudo systemctl status nvram-setup.service
+
+Change Ownership to Your User
+
+If the file is owned by root, change it to your user (master in this case):
+
+    sudo chown master:master "/home/master/Desktop/My Works/PROJECT/CODES/NVRAM/nvram.img"
+
+
+    
+
+Stop NVRAM	sudo systemctl stop nvram-setup.service
+Start NVRAM	sudo systemctl start nvram-setup.service
+Disable on Boot	sudo systemctl disable nvram-setup.service
+Enable on Boot	sudo systemctl enable nvram-setup.service
+Remove NVRAM File	sudo rm -f /home/master/Desktop/My Works/PROJECT/CODES/NVRAM/nvram.img
