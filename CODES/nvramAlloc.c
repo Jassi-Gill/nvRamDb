@@ -4,7 +4,8 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#define FILEPATH "/home/master/Desktop/My Works/PROJECT/CODES/NVRAM/nvram.img"
+// #define FILEPATH "/home/master/Desktop/My Works/PROJECT/CODES/NVRAM/nvram.img"
+#define FILEPATH "/dev/dax0.0"
 #define FILESIZE (2L * 1024 * 1024 * 1024) // 2GB
 
 int main()
@@ -30,7 +31,20 @@ int main()
 
     printf("NVRAM Data: %.*s\n", 13, map);
 
-    munmap(map, FILESIZE);
+    // if (msync(map, FILESIZE, MS_SYNC) == -1)
+    // {
+    //     perror("msync failed");
+    //     munmap(map, FILESIZE);
+    //     close(fd);
+    //     return 1;
+    // }
+    // printf("Changes synced to disk\n");
+
+    // Clean up
+    if (munmap(map, FILESIZE) == -1)
+    {
+        perror("munmap failed");
+    }
     close(fd);
     return 0;
 }

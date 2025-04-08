@@ -1,0 +1,100 @@
+Alternative: Full Control with tmpfs and Manual Sync
+
+Since mmap with MAP_SHARED doesn’t give you absolute control over syncing, here’s a better approach to meet your exact requirement (changes in RAM only, synced manually):
+
+    Use tmpfs (RAM-Based Filesystem):
+        Mount a temporary filesystem in RAM:
+        bash
+
+        sudo mkdir /mnt/nvram
+        sudo mount -t tmpfs -o size=2G tmpfs /mnt/nvram
+
+        Create your nvram.img in /mnt/nvram/nvram.img and map it with mmap.
+    Work in RAM:
+        Since tmpfs is RAM-based, all changes stay in memory—no disk syncing happens automatically.
+    Manual Sync to Disk:
+        When you’re ready, copy the tmpfs file to a persistent location (e.g., /home/master/nvram.img) using standard file I/O or cp.
+
+Example C Code with tmpfs
+c
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define NVRAM_SIZE (2UL * 1024 * 1024 * 1024)  // 2GB
+
+// Sync to disk manually
+void sync_to_disk(void* nvram, const char* dest_path) {
+    int fd = open(dest_path, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+    if (fd == -1) {
+        perror("open dest failed");
+        return;
+    }
+    if (write(fd, nvram, NVRAM_SIZE) != NVRAM_SIZE) {
+        perror("write failed");
+    }
+    close(fd);
+}
+
+int main() {
+    // Open file in tmpfs (assume pre-created with truncate -s 2G)
+    int fd = open("/mnt/nvram/nvram.img", O_RDWR);
+    if (fd == -1) {
+        perror("open failed");
+        return 1;
+    }
+
+    // Map it into memory
+    void* nvram = mmap(NULL, NVRAM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (nvram == MAP_FAILED) {
+        perror("mmap failed");
+        close(fd);
+        return 1;
+    }
+
+    // Make changes in RAM
+    char* data = (char*)nvram;
+    strcpy(data, "Hello, RAM-only!");
+    printf("Data: %s\n", data);
+
+    // Simulate work
+    sleep(5);  // Changes stay in RAM
+
+    // Manually sync to disk when ready
+    sync_to_disk(nvram, "/home/master/nvram.img");
+    printf("Synced to disk\n");
+
+    // Clean up
+    munmap(nvram, NVRAM_SIZE);
+    close(fd);
+    return 0;
+}
+Setup tmpfs
+
+Before running:
+bash
+sudo mount -t tmpfs -o size=2G tmpfs /mnt/nvram
+truncate -s 2G /mnt/nvram/nvram.img
+Advantages
+
+    No Auto-Sync: Changes stay in RAM until you copy them to disk.
+    Full Control: You decide when to persist with sync_to_disk.
+    Fast: All operations are in RAM via tmpfs.
+
+Disadvantages
+
+    Manual Sync: Requires explicit code to write to disk.
+    Volatility: Data in tmpfs is lost on reboot unless synced.
+
+Final Answer
+
+With mmap and MAP_SHARED on a regular file (like nvram.img on disk), you cannot completely stop the OS from syncing changes while the file is mapped. The kernel may write dirty pages to disk at any time, and this isn’t tied to munmap—it’s a background process. Tweaking kernel parameters can delay syncing, but it’s not foolproof and requires root access.
+
+For your requirement—changes in RAM only, synced manually—use tmpfs instead:
+
+    Map a file in a RAM-based tmpfs mount (e.g., /mnt/nvram/nvram.img).
+    Make changes in RAM via mmap.
+    Manually copy the data to a persistent file (e.g., /home/master/nvram.img) when you want to sync.
