@@ -27,6 +27,8 @@ typedef struct WALTable
     pthread_mutex_t mutex;          // Mutex for thread-safe WAL operations
 } WALTable;
 
+extern WALTable *wal_tables[MAX_TABLES];
+
 // Function Declarations
 void flush_range(void *start, size_t size);
 int wal_create_table(int table_id, void *memory_ptr);                                                   // Create WAL table

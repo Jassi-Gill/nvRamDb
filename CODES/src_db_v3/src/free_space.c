@@ -4,9 +4,12 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <string.h>
+#include <pthread.h>
 
 #define FILEPATH "/dev/dax0.0"
 #define FILESIZE (2L * 1024 * 1024 * 1024) // 2GB
+
+pthread_mutex_t free_space_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // Structure for free space block
 typedef struct FreeBlock
@@ -48,17 +51,16 @@ void init_free_space()
 // Allocate memory using first-fit algorithm
 void *allocate_memory(size_t size)
 {
+    pthread_mutex_lock(&free_space_mutex);
     FreeBlock *current = freeList, *prev = NULL;
 
     while (current)
     {
         if (current->size >= size)
-        { // Found a suitable block
+        {
             void *allocated_memory = (char *)nvram_map + current->offset;
-
-            // Update free space list
             if (current->size == size)
-            { // Exact fit
+            {
                 if (prev)
                 {
                     prev->next = current->next;
@@ -70,30 +72,30 @@ void *allocate_memory(size_t size)
                 free(current);
             }
             else
-            { // Split block
+            {
                 current->offset += size;
                 current->size -= size;
             }
-
+            pthread_mutex_unlock(&free_space_mutex);
             return allocated_memory;
         }
         prev = current;
         current = current->next;
     }
-
-    return NULL; // No sufficient memory available
+    pthread_mutex_unlock(&free_space_mutex);
+    return NULL;
 }
 
 // Free allocated memory and merge free blocks
 void free_memory(void *ptr, size_t size)
 {
+    pthread_mutex_lock(&free_space_mutex);
     size_t offset = (char *)ptr - (char *)nvram_map;
     FreeBlock *newBlock = (FreeBlock *)malloc(sizeof(FreeBlock));
     newBlock->size = size;
     newBlock->offset = offset;
     newBlock->next = NULL;
 
-    // Insert into free list in sorted order (by offset)
     FreeBlock *current = freeList, *prev = NULL;
     while (current && current->offset < newBlock->offset)
     {
@@ -111,7 +113,6 @@ void free_memory(void *ptr, size_t size)
         freeList = newBlock;
     }
 
-    // Merge adjacent free blocks
     if (newBlock->next && newBlock->offset + newBlock->size == newBlock->next->offset)
     {
         newBlock->size += newBlock->next->size;
@@ -126,6 +127,7 @@ void free_memory(void *ptr, size_t size)
         prev->next = newBlock->next;
         free(newBlock);
     }
+    pthread_mutex_unlock(&free_space_mutex);
 }
 
 // Cleanup function

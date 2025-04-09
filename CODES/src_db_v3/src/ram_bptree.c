@@ -640,10 +640,6 @@ int db_begin_transaction()
     return transaction_begin(&g_lock_manager);
 }
 
-// // Commit a transaction
-// bool db_commit_transaction(int txn_id) {
-//     return transaction_commit(&g_lock_manager, txn_id);
-// }
 // Modified commit transaction to update WAL commit pointers
 bool db_commit_transaction(int txn_id)
 {
@@ -666,6 +662,7 @@ bool db_commit_transaction(int txn_id)
     return result;
 }
 // Abort a transaction
+// In src/ram_bptree.c
 bool db_abort_transaction(int txn_id)
 {
     return transaction_abort(&g_lock_manager, txn_id);
@@ -862,6 +859,20 @@ bool db_put_row(Table *table, int txn_id, int key, void *data, size_t size)
         printf("Error: Could not acquire row lock\n");
         lock_release(&g_lock_manager, txn_id, table->table_id, true);
         return false;
+    }
+
+    BPTreeNode *leaf = find_leaf(table->index, key);
+    if (leaf)
+    {
+        // Check if key already exists
+        int pos = find_key_in_leaf(leaf, key);
+        if (pos != -1)
+        {
+            // Key already exists, do not insert
+            lock_release(&g_lock_manager, txn_id, key, false);
+            lock_release(&g_lock_manager, txn_id, table->table_id, true);
+            return 1; // Row already exists
+        }
     }
 
     // CHANGED: Create WAL entry BEFORE allocating NVRAM memory
