@@ -3,6 +3,8 @@
 #include <string.h>
 #include "../include/wal.h"
 
+// move nti
+
 #include <immintrin.h>
 
 void flush_range(void *start, size_t size)
@@ -75,6 +77,9 @@ int wal_add_entry(int table_id, int row_id, void *data_ptr, int op, void *entry_
 
     // Insert entry into WAL table
     table->entries[table->entry_count++] = entry;
+
+    // Flush the WAL entry to NVRAM
+    // flush_range(entry, sizeof(WALEntry));
 
     // Unlock the WAL table mutex
     pthread_mutex_unlock(&table->mutex);

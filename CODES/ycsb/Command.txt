@@ -1,0 +1,1 @@
+ ./bin/ycsb load basic -s   -P workloads/workloada   -p db.driver=com.yahoo.ycsb.db.YourDBClient   -p yourdb.host=127.0.0.1   -p yourdb.port=8080   -p yourdb.table=ycsb_table   -p recordcount=100   -threads 4   -cp yourdb/target/yourdb-binding-0.17.0.jar
