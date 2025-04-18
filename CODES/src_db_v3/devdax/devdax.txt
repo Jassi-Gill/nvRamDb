@@ -1,3 +1,10 @@
+sudo ndctl destroy-namespace namespace0.0 --force
+
+sudo ndctl create-namespace --mode=devdax --map=mem --size=2G
+
+
+
+
 # How to Set Up a Devdax Namespace for 2GB of RAM
 # Date: April 08, 2025
 # Assumptions: Debian system with 16GB RAM, reserving 2GB at 12GB-14GB

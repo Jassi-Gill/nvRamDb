@@ -1,0 +1,553 @@
+Commands:
+
+./bin/ycsb run basic -s \
+  -P workloads/workloada \
+  -p db.driver=com.yahoo.ycsb.db.YourDBClient \
+  -p yourdb.host=127.0.0.1 \
+  -p yourdb.port=8080 \
+  -p yourdb.table=ycsb_table \
+  -p operationcount=1000 \
+  -threads 4 \
+  -cp yourdb/target/yourdb-binding-0.17.0.jar
+
+./bin/ycsb run redis -s \
+  -P workloads/workloada \
+  -p redis.host=127.0.0.1 \
+  -p redis.port=6379 \
+  -p operationcount=1000 \
+  -threads 4
+
+
+Load Phase - Redis:
+
+
+./bin/ycsb load redis -s \
+  -P workloads/workloada \
+  -p redis.host=127.0.0.1 \
+  -p redis.port=6379 \
+  -p recordcount=1000 \
+  -threads 4
+
+
+Load Phase - My Database:
+
+
+./bin/ycsb load basic -s \
+  -P workloads/workloada \
+  -p db.driver=com.yahoo.ycsb.db.YourDBClient \
+  -p yourdb.host=127.0.0.1 \
+  -p yourdb.port=8080 \
+  -p yourdb.table=ycsb_table \
+  -p recordcount=1000 \
+  -threads 4 \
+  -cp yourdb/target/yourdb-binding-0.17.0.jar
+
+
+Result:
+Redis
+
+Loading workload...
+Starting test.
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+2025-04-15 11:21:20:050 0 sec: 0 operations; est completion in 0 second
+2025-04-15 11:21:20:132 0 sec: 1000 operations; 9009.01 current ops/sec; [CLEANUP: Count=4, Max=1025, Min=470, Avg=720.75, 90=1025, 99=1025, 99.9=1025, 99.99=1025] [INSERT: Count=1000, Max=6719, Min=101, Avg=249.85, 90=311, 99=1097, 99.9=6711, 99.99=6719]
+[OVERALL], RunTime(ms), 111
+[OVERALL], Throughput(ops/sec), 9009.009009009009
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 720.75
+[CLEANUP], MinLatency(us), 470
+[CLEANUP], MaxLatency(us), 1025
+[CLEANUP], 95thPercentileLatency(us), 1025
+[CLEANUP], 99thPercentileLatency(us), 1025
+[INSERT], Operations, 1000
+[INSERT], AverageLatency(us), 249.85
+[INSERT], MinLatency(us), 101
+[INSERT], MaxLatency(us), 6719
+[INSERT], 95thPercentileLatency(us), 375
+[INSERT], 99thPercentileLatency(us), 1097
+[INSERT], Return=OK, 1000
+
+
+MYDB
+
+2025-04-15 11:22:12:423 0 sec: 1000 operations; 6976.74 current ops/sec; [CLEANUP: Count=4, Max=12, Min=1, Avg=4, 90=12, 99=12, 99.9=12, 99.99=12] [INSERT: Count=586, Max=15087, Min=8, Avg=281.61, 90=411, 99=997, 99.9=14983, 99.99=15087]
+[OVERALL], RunTime(ms), 87
+[OVERALL], Throughput(ops/sec), 11494.252873563219
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 4.0
+[CLEANUP], MinLatency(us), 1
+[CLEANUP], MaxLatency(us), 12
+[CLEANUP], 95thPercentileLatency(us), 12
+[CLEANUP], 99thPercentileLatency(us), 12
+[INSERT], Operations, 1000
+[INSERT], AverageLatency(us), 262.169
+[INSERT], MinLatency(us), 8
+[INSERT], MaxLatency(us), 15087
+[INSERT], 95thPercentileLatency(us), 560
+[INSERT], 99thPercentileLatency(us), 945
+[INSERT], Return=OK, 1000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Workload A (50% Read / 50% Update)
+
+Redis
+
+./bin/ycsb run redis -s \
+  -P workloads/workloada \
+  -p redis.host=127.0.0.1 \
+  -p redis.port=6379 \
+  -p operationcount=1000 \
+  -threads 4
+
+My Db
+
+./bin/ycsb run basic -s \
+  -P workloads/workloada \
+  -p db.driver=com.yahoo.ycsb.db.YourDBClient \
+  -p yourdb.host=127.0.0.1 \
+  -p yourdb.port=8080 \
+  -p yourdb.table=ycsb_table \
+  -p operationcount=1000 \
+  -threads 4 \
+  -cp yourdb/target/yourdb-binding-0.17.0.jar
+
+Result:
+Redis
+
+Loading workload...
+Starting test.
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+2025-04-15 11:24:01:720 0 sec: 0 operations; est completion in 0 second
+2025-04-15 11:24:01:766 0 sec: 1000 operations; 12658.23 current ops/sec; [READ: Count=507, Max=9535, Min=44, Avg=179.4, 90=159, 99=632, 99.9=9527, 99.99=9535] [CLEANUP: Count=4, Max=1050, Min=42, Avg=630.75, 90=1050, 99=1050, 99.9=1050, 99.99=1050] [UPDATE: Count=493, Max=840, Min=53, Avg=110.89, 90=159, 99=256, 99.9=840, 99.99=840]
+[OVERALL], RunTime(ms), 79
+[OVERALL], Throughput(ops/sec), 12658.227848101265
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 507
+[READ], AverageLatency(us), 179.39842209072978
+[READ], MinLatency(us), 44
+[READ], MaxLatency(us), 9535
+[READ], 95thPercentileLatency(us), 191
+[READ], 99thPercentileLatency(us), 632
+[READ], Return=OK, 507
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 630.75
+[CLEANUP], MinLatency(us), 42
+[CLEANUP], MaxLatency(us), 1050
+[CLEANUP], 95thPercentileLatency(us), 1050
+[CLEANUP], 99thPercentileLatency(us), 1050
+[UPDATE], Operations, 493
+[UPDATE], AverageLatency(us), 110.89452332657201
+[UPDATE], MinLatency(us), 53
+[UPDATE], MaxLatency(us), 840
+[UPDATE], 95thPercentileLatency(us), 191
+[UPDATE], 99thPercentileLatency(us), 256
+[UPDATE], Return=OK, 493
+
+
+My Db
+
+2025-04-15 11:25:33:090 0 sec: 1000 operations; ∞ current ops/sec; [READ: Count=494, Max=665, Min=4, Avg=51.26, 90=116, 99=365, 99.9=665, 99.99=665] [CLEANUP: Count=4, Max=3, Min=1, Avg=1.75, 90=3, 99=3, 99.9=3, 99.99=3] [UPDATE: Count=506, Max=901, Min=13, Avg=79.93, 90=142, 99=715, 99.9=877, 99.99=901]
+2025-04-15 11:25:33:098 0 sec: 1000 operations; 0 current ops/sec; [READ: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0] [CLEANUP: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0] [UPDATE: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0]
+[OVERALL], RunTime(ms), 34
+[OVERALL], Throughput(ops/sec), 29411.764705882353
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 494
+[READ], AverageLatency(us), 51.25506072874494
+[READ], MinLatency(us), 4
+[READ], MaxLatency(us), 665
+[READ], 95thPercentileLatency(us), 162
+[READ], 99thPercentileLatency(us), 365
+[READ], Return=OK, 494
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 1.75
+[CLEANUP], MinLatency(us), 1
+[CLEANUP], MaxLatency(us), 3
+[CLEANUP], 95thPercentileLatency(us), 3
+[CLEANUP], 99thPercentileLatency(us), 3
+[UPDATE], Operations, 506
+[UPDATE], AverageLatency(us), 79.93083003952569
+[UPDATE], MinLatency(us), 13
+[UPDATE], MaxLatency(us), 901
+[UPDATE], 95thPercentileLatency(us), 236
+[UPDATE], 99thPercentileLatency(us), 715
+[UPDATE], Return=OK, 506
+
+
+
+
+
+
+
+
+
+
+
+
+Workload B (95% Read / 5% Update)
+
+Redis:
+
+./bin/ycsb run redis -s \
+    -P workloads/workloadb \
+    -p redis.host=127.0.0.1 \
+    -p redis.port=6379 \
+    -p operationcount=1000 \
+    -threads 4
+
+My Database:
+
+./bin/ycsb run basic -s \
+  -P workloads/workloadb \
+  -p db.driver=com.yahoo.ycsb.db.YourDBClient \
+  -p yourdb.host=127.0.0.1 \
+  -p yourdb.port=8080 \
+  -p yourdb.table=ycsb_table \
+  -p operationcount=1000 \
+  -threads 4 \
+  -cp yourdb/target/yourdb-binding-0.17.0.jar
+
+
+Result
+Redis
+
+Loading workload...
+Starting test.
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+2025-04-15 11:27:15:767 0 sec: 0 operations; est completion in 0 second
+2025-04-15 11:27:15:819 0 sec: 1000 operations; 11627.91 current ops/sec; [READ: Count=945, Max=10975, Min=48, Avg=160.61, 90=163, 99=433, 99.9=10959, 99.99=10975] [CLEANUP: Count=4, Max=569, Min=39, Avg=234.5, 90=569, 99=569, 99.9=569, 99.99=569] [UPDATE: Count=55, Max=908, Min=91, Avg=157.87, 90=201, 99=238, 99.9=908, 99.99=908]
+[OVERALL], RunTime(ms), 86
+[OVERALL], Throughput(ops/sec), 11627.906976744185
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 945
+[READ], AverageLatency(us), 160.60846560846562
+[READ], MinLatency(us), 48
+[READ], MaxLatency(us), 10975
+[READ], 95thPercentileLatency(us), 196
+[READ], 99thPercentileLatency(us), 433
+[READ], Return=OK, 945
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 234.5
+[CLEANUP], MinLatency(us), 39
+[CLEANUP], MaxLatency(us), 569
+[CLEANUP], 95thPercentileLatency(us), 569
+[CLEANUP], 99thPercentileLatency(us), 569
+[UPDATE], Operations, 55
+[UPDATE], AverageLatency(us), 157.87272727272727
+[UPDATE], MinLatency(us), 91
+[UPDATE], MaxLatency(us), 908
+[UPDATE], 95thPercentileLatency(us), 212
+[UPDATE], 99thPercentileLatency(us), 238
+[UPDATE], Return=OK, 55
+
+My Db
+
+2025-04-15 11:28:22:186 0 sec: 1000 operations; ∞ current ops/sec; [READ: Count=950, Max=889, Min=3, Avg=50.59, 90=110, 99=354, 99.9=855, 99.99=889] [CLEANUP: Count=4, Max=4, Min=0, Avg=1.5, 90=4, 99=4, 99.9=4, 99.99=4] [UPDATE: Count=50, Max=562, Min=23, Avg=90.38, 90=126, 99=562, 99.9=562, 99.99=562]
+2025-04-15 11:28:22:193 0 sec: 1000 operations; 0 current ops/sec; [READ: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0] [CLEANUP: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0] [UPDATE: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0]
+[OVERALL], RunTime(ms), 31
+[OVERALL], Throughput(ops/sec), 32258.064516129034
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 950
+[READ], AverageLatency(us), 50.59157894736842
+[READ], MinLatency(us), 3
+[READ], MaxLatency(us), 889
+[READ], 95thPercentileLatency(us), 143
+[READ], 99thPercentileLatency(us), 354
+[READ], Return=OK, 950
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 1.5
+[CLEANUP], MinLatency(us), 0
+[CLEANUP], MaxLatency(us), 4
+[CLEANUP], 95thPercentileLatency(us), 4
+[CLEANUP], 99thPercentileLatency(us), 4
+[UPDATE], Operations, 50
+[UPDATE], AverageLatency(us), 90.38
+[UPDATE], MinLatency(us), 23
+[UPDATE], MaxLatency(us), 562
+[UPDATE], 95thPercentileLatency(us), 387
+[UPDATE], 99thPercentileLatency(us), 562
+[UPDATE], Return=OK, 50
+
+
+
+
+
+
+
+Workload C (100% Read)
+
+Redis:
+
+./bin/ycsb run redis -s \
+    -P workloads/workloadc \
+    -p redis.host=127.0.0.1 \
+    -p redis.port=6379 \
+    -p operationcount=1000 \
+    -threads 4
+
+My Database:
+
+./bin/ycsb run basic -s \
+  -P workloads/workloadc \
+  -p db.driver=com.yahoo.ycsb.db.YourDBClient \
+  -p yourdb.host=127.0.0.1 \
+  -p yourdb.port=8080 \
+  -p yourdb.table=ycsb_table \
+  -p operationcount=1000 \
+  -threads 4 \
+  -cp yourdb/target/yourdb-binding-0.17.0.jar
+
+Result
+Redis
+
+
+Loading workload...
+Starting test.
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+2025-04-15 11:29:49:497 0 sec: 0 operations; est completion in 0 second
+2025-04-15 11:29:49:550 0 sec: 1000 operations; 11111.11 current ops/sec; [READ: Count=1000, Max=12031, Min=51, Avg=168.79, 90=175, 99=458, 99.9=12023, 99.99=12031] [CLEANUP: Count=4, Max=576, Min=51, Avg=339.5, 90=576, 99=576, 99.9=576, 99.99=576]
+[OVERALL], RunTime(ms), 90
+[OVERALL], Throughput(ops/sec), 11111.111111111111
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 1000
+[READ], AverageLatency(us), 168.788
+[READ], MinLatency(us), 51
+[READ], MaxLatency(us), 12031
+[READ], 95thPercentileLatency(us), 207
+[READ], 99thPercentileLatency(us), 458
+[READ], Return=OK, 1000
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 339.5
+[CLEANUP], MinLatency(us), 51
+[CLEANUP], MaxLatency(us), 576
+[CLEANUP], 95thPercentileLatency(us), 576
+[CLEANUP], 99thPercentileLatency(us), 576
+
+MyDB
+2025-04-15 11:30:20:238 0 sec: 1000 operations; ∞ current ops/sec; [READ: Count=1000, Max=438, Min=4, Avg=46.99, 90=120, 99=257, 99.9=384, 99.99=438] [CLEANUP: Count=4, Max=7, Min=1, Avg=3, 90=7, 99=7, 99.9=7, 99.99=7]
+2025-04-15 11:30:20:244 0 sec: 1000 operations; 0 current ops/sec; [READ: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0] [CLEANUP: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0]
+[OVERALL], RunTime(ms), 28
+[OVERALL], Throughput(ops/sec), 35714.28571428572
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 1000
+[READ], AverageLatency(us), 46.993
+[READ], MinLatency(us), 4
+[READ], MaxLatency(us), 438
+[READ], 95thPercentileLatency(us), 154
+[READ], 99thPercentileLatency(us), 257
+[READ], Return=OK, 1000
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 3.0
+[CLEANUP], MinLatency(us), 1
+[CLEANUP], MaxLatency(us), 7
+[CLEANUP], 95thPercentileLatency(us), 7
+[CLEANUP], 99thPercentileLatency(us), 7
+
+
+
+
+
+
+
+
+
+
+
+
+Workload D (95% Read / 5% Insert)
+
+Redis:
+
+./bin/ycsb run redis -s \
+    -P workloads/workloadd \
+    -p redis.host=127.0.0.1 \
+    -p redis.port=6379 \
+    -p operationcount=1000 \
+    -threads 4
+
+
+Your Database:
+
+
+./bin/ycsb run basic -s \
+  -P workloads/workloadd \
+  -p db.driver=com.yahoo.ycsb.db.YourDBClient \
+  -p yourdb.host=127.0.0.1 \
+  -p yourdb.port=8080 \
+  -p yourdb.table=ycsb_table \
+  -p operationcount=1000 \
+  -threads 4 \
+  -cp yourdb/target/yourdb-binding-0.17.0.jar
+
+Result
+Redis
+
+Loading workload...
+Starting test.
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+DBWrapper: report latency for each error is false and specific error codes to track for latency are: []
+2025-04-15 11:31:33:819 0 sec: 0 operations; est completion in 0 second
+2025-04-15 11:31:33:874 0 sec: 1000 operations; 11904.76 current ops/sec; [READ: Count=946, Max=10047, Min=41, Avg=156.1, 90=163, 99=638, 99.9=10039, 99.99=10047] [CLEANUP: Count=4, Max=986, Min=37, Avg=316, 90=986, 99=986, 99.9=986, 99.99=986] [INSERT: Count=54, Max=1661, Min=168, Avg=428.09, 90=672, 99=1137, 99.9=1661, 99.99=1661]
+[OVERALL], RunTime(ms), 84
+[OVERALL], Throughput(ops/sec), 11904.761904761905
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 946
+[READ], AverageLatency(us), 156.09619450317123
+[READ], MinLatency(us), 41
+[READ], MaxLatency(us), 10047
+[READ], 95thPercentileLatency(us), 200
+[READ], 99thPercentileLatency(us), 638
+[READ], Return=OK, 946
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 316.0
+[CLEANUP], MinLatency(us), 37
+[CLEANUP], MaxLatency(us), 986
+[CLEANUP], 95thPercentileLatency(us), 986
+[CLEANUP], 99thPercentileLatency(us), 986
+[INSERT], Operations, 54
+[INSERT], AverageLatency(us), 428.0925925925926
+[INSERT], MinLatency(us), 168
+[INSERT], MaxLatency(us), 1661
+[INSERT], 95thPercentileLatency(us), 702
+[INSERT], 99thPercentileLatency(us), 1137
+[INSERT], Return=OK, 54
+
+My Db
+
+2025-04-15 11:32:06:306 0 sec: 1000 operations; ∞ current ops/sec; [READ: Count=952, Max=1056, Min=3, Avg=48.68, 90=116, 99=301, 99.9=1004, 99.99=1056] [CLEANUP: Count=4, Max=3, Min=1, Avg=1.5, 90=3, 99=3, 99.9=3, 99.99=3] [INSERT: Count=48, Max=1079, Min=103, Avg=218.67, 90=300, 99=1079, 99.9=1079, 99.99=1079]
+2025-04-15 11:32:06:314 0 sec: 1000 operations; 0 current ops/sec; [READ: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0] [CLEANUP: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0] [INSERT: Count=0, Max=0, Min=9223372036854775807, Avg=NaN, 90=0, 99=0, 99.9=0, 99.99=0]
+[OVERALL], RunTime(ms), 32
+[OVERALL], Throughput(ops/sec), 31250.0
+[TOTAL_GCS_G1_Young_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Young_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Young_Generation], Time(%), 0.0
+[TOTAL_GCS_G1_Old_Generation], Count, 0
+[TOTAL_GC_TIME_G1_Old_Generation], Time(ms), 0
+[TOTAL_GC_TIME_%_G1_Old_Generation], Time(%), 0.0
+[TOTAL_GCs], Count, 0
+[TOTAL_GC_TIME], Time(ms), 0
+[TOTAL_GC_TIME_%], Time(%), 0.0
+[READ], Operations, 952
+[READ], AverageLatency(us), 48.679621848739494
+[READ], MinLatency(us), 3
+[READ], MaxLatency(us), 1056
+[READ], 95thPercentileLatency(us), 149
+[READ], 99thPercentileLatency(us), 301
+[READ], Return=OK, 952
+[CLEANUP], Operations, 4
+[CLEANUP], AverageLatency(us), 1.5
+[CLEANUP], MinLatency(us), 1
+[CLEANUP], MaxLatency(us), 3
+[CLEANUP], 95thPercentileLatency(us), 3
+[CLEANUP], 99thPercentileLatency(us), 3
+[INSERT], Operations, 48
+[INSERT], AverageLatency(us), 218.66666666666666
+[INSERT], MinLatency(us), 103
+[INSERT], MaxLatency(us), 1079
+[INSERT], 95thPercentileLatency(us), 382
+[INSERT], 99thPercentileLatency(us), 1079
+[INSERT], Return=OK, 48
