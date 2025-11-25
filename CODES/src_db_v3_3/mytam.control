@@ -1,0 +1,5 @@
+# mytam extension control file
+comment = 'A custom Table Access Method for NVRAM'
+default_version = '1.0'
+module_pathname = '$libdir/mytam'
+relocatable = true

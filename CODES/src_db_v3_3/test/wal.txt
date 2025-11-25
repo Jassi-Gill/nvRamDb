@@ -157,7 +157,7 @@ void wal_show_data()
             printf("Entry %d: Key: %d | Operation: %s | Data: %s | Size: %zu | %s\n",
                    entry_count++,
                    current->key,
-                   current->op_flag ? "Add" : "Delete",
+                   current->op_flag ? "Delete" : "Add",
                    (char *)current->data_ptr,
                    current->data_size,
                    (current == table->commit_ptr) ? "COMMITTED" : "");
